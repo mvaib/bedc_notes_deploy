@@ -9,7 +9,13 @@ const PORT = 8080;
 
 app.use(express.json());
 app.use(express.text());
-app.use(cors());
+app.use(
+    cors({
+        origin: "http://localhost:5173", // replace with your actual origin of your frontend
+        methods : ['GET','POST','PUT','PATCH','DELETE'], // Allowed HTTP methods
+        credentials : true // if you need cookies or authentication
+    })
+    );
 app.use("/users",userRouter);
 app.use("/notes", noteRouter);
 
