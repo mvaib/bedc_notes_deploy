@@ -1,0 +1,14 @@
+Full Stack CRUD 1
+
+Notes Taking Application
+
+-> Entire BE for this App
+  -> Authentication/Authorization
+  -> Hashing
+  -> JWT
+  -> Middlewares
+  -> Relationships
+  -> Schema Virtuals
+  -> Env. Variables
+
+-> Create a Production ready BE for Notes Taking Applications.
