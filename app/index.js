@@ -11,10 +11,12 @@ app.use(express.json());
 app.use(express.text());
 
 // CORS configuration
+
 app.use(
     cors({
         origin: "http://localhost:5173", // Allowed origin
         methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'], // Allowed HTTP methods
+        allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
         credentials: true // if you need cookies or authentication
     })
 );
