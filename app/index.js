@@ -16,6 +16,10 @@ app.use(
         credentials : true // if you need cookies or authentication
     })
 );
+app.options("/users",cors()) // Pre-flight request for users
+app.options("notes",cors())  // Pre-flight request for notes
+
+app.use(cors())
 
 app.use("/users",userRouter);
 app.use("/notes", noteRouter);
