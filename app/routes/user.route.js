@@ -2,7 +2,8 @@ const express = require("express");
 const userRouter = express.Router();
 const bcrypt = require("bcrypt");
 const { UserModel } = require("../models/user.model");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { BlacklistModel } = require("../models/blacklist.model");
 require("dotenv").config()
 
 
@@ -54,6 +55,25 @@ userRouter.post("/login", async(req,res)=>{
         }
     } catch (error) {
         res.status(500).json({msg : "There has been an error", error})
+    }
+})
+
+userRouter.post("/logout", async(req, res)=>{
+    const token = req.headers["authorization"]?.split(" ")[1] // Extract token from Bearer
+
+    if(!token) return res.sendStatus(403) // No token provided
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+        const blacklistEntry = new BlacklistModel({
+            token,
+            expiresAt : new Date(decoded.exp * 1000) // Token expiration time
+        });
+        await blacklistEntry.save();
+        return res.status(200).json({msg : "Logout successfull!"})
+    } catch (error) {
+        res.status(500).json({msg : "Internal server error!", error})
     }
 })
 
