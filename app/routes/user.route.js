@@ -44,7 +44,7 @@ userRouter.post("/login", async(req,res)=>{
         if(matchingUser){
             const isPasswordMatching = await bcrypt.compare(pass,matchingUser.pass)
             if(isPasswordMatching){
-                const token = jwt.sign({userId : matchingUser._id, user : matchingUser.name},process.env.SECRET_KEY);
+                const token = jwt.sign({userId : matchingUser._id, user : matchingUser.name},process.env.SECRET_KEY,{expiresIn : "24h"});
                 res.status(200).json({msg : "login successfull!", token})
             }else{
                 res.status(400).json({msg : "wrong password!"})
@@ -57,6 +57,35 @@ userRouter.post("/login", async(req,res)=>{
         res.status(500).json({msg : "There has been an error", error})
     }
 })
+
+userRouter.post("/logout", async (req, res) => {
+    const token = req.headers["authorization"]?.split(" ")[1];
+
+    if (!token) {
+        return res.status(403).json({ msg: "No token provided" });
+    }
+
+    try {
+        console.log("JWT received for logout:", token); // Log the incoming token
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        
+        // Check if exp exists
+        if (!decoded.exp) {
+            throw new Error("No expiration time in token");
+        }
+
+        const blacklistToken = new BlacklistModel({
+            token,
+            expiresAt: new Date(decoded.exp * 1000) // Valid expiration time
+        });
+
+        await blacklistToken.save();
+        return res.status(200).json({ msg: "Logout successful!" });
+    } catch (error) {
+        console.error(`Error blacklisting token: ${error}`);
+        return res.status(500).json({ msg: "Internal server error!", error: error.message });
+    }
+});
 
 
 
