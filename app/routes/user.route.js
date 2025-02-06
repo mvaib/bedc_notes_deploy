@@ -58,24 +58,8 @@ userRouter.post("/login", async(req,res)=>{
     }
 })
 
-userRouter.post("/logout", async(req, res)=>{
-    const token = req.headers["authorization"]?.split(" ")[1] // Extract token from Bearer
 
-    if(!token) return res.sendStatus(403) // No token provided
 
-    try {
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
-
-        const blacklistEntry = new BlacklistModel({
-            token,
-            expiresAt : new Date(decoded.exp * 1000) // Token expiration time
-        });
-        await blacklistEntry.save();
-        return res.status(200).json({msg : "Logout successfull!"})
-    } catch (error) {
-        res.status(500).json({msg : "Internal server error!", error})
-    }
-})
 
 
 
